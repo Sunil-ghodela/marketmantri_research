@@ -42,13 +42,15 @@ annualization on ~92-trades/yr data — `docs/RESULTS.md` has the ledger.)
 An independent, framework-based evidence audit of this repo — what is
 verified, what is not — lives at **`docs/AUDIT-2026-07-26.md`**. The
 canonical, dated ledger of every number ever quoted (including the invalid
-ones) is **`docs/RESULTS.md`** — start there.
+ones) is **`docs/RESULTS.md`** — start there. To check any claim yourself with
+one copy-paste command, use **`docs/VERIFY.md`**.
 
 ## Research process
 
-- **~70 hypotheses** tested and written down: survivors in
-  `docs/RESEARCH_CATALOG.md`; failures kept in
-  `docs/REJECTED_HYPOTHESES.md` (43 entries — rejections are data too).
+- **50+ hypotheses** tested and written down: 18 catalogued in
+  `docs/RESEARCH_CATALOG.md`, **34 documented rejections** in
+  `docs/REJECTED_HYPOTHESES.md` — rejections are data too. Count them
+  yourself: `docs/VERIFY.md` has the commands.
 - Walk-forward / out-of-sample discipline via `optuna` splits; fee-aware
   net results; unit tests in `tests/`.
 - Research runs in an AI-agent-assisted workflow: agents draft code and
