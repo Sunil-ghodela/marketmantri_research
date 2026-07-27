@@ -267,7 +267,7 @@ Jul 24 ───── YOU ARE HERE 📍
 
 3. **2026 is a weak year.** Basket Sharpe 1.320 YTD (vs 3-5 in prior years). Market in chop. This IS the strategy's weakness — it struggles in range-bound markets.
 
-4. **No real money deployed.** The capital partner is still waiting. The gate was "prove it forward" — we're not there yet.
+4. **No real money deployed.** The capital partner (Vaibhav) is still waiting. The gate was "prove it forward" — we're not there yet.
 
 5. **64 large caps sit idle.** MARUTI, HINDUNILVR, HCLTECH, NTPC, ONGC etc. don't trigger MACD crossovers. Need an entirely different strategy for them.
 
@@ -389,3 +389,13 @@ PRESENT (Jul 22)                    NEXT MILESTONES
   ║  "Jo backtest me nahi, woh real me bhi nahi."    ║
   ╚══════════════════════════════════════════════════╝
 ```
+
+## 27 Jul 2026 — Sharpe annualization restatement (integrity fix #2)
+`_nifty_10yr_combined.py` annualized per-trade Sharpe with sqrt(252) — that
+assumes one trade per DAY; the study trades ~92 times/YEAR. Correct scaling is
+sqrt(trades/year). **10-yr NIFTY divergence study Sharpe restated 3.84 → 2.31**
+(yearly rows restated too; mean/std/trade-counts/PF/WR unchanged — only the
+annualization). Script fixed; results JSON restated with a sharpe_method note.
+Standalone variant scripts already used sqrt(trades_per_year) and were correct.
+Caught during resume-claim verification, same discipline as the Jul-W3
+look-ahead fix (6.08 → 2.998).

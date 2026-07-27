@@ -26,13 +26,15 @@ was peeking one bar into the future. Fixing it cut the Sharpe to an honest
 
 Most research portfolios only contain wins. This repo's most valuable
 artifact is a documented, self-caught failure — because that is what
-research discipline actually looks like.
+research discipline actually looks like. (It happened twice: on 27 Jul the
+10-yr study's Sharpe was restated 3.84 → 2.31 after catching a √252
+annualization on ~92-trades/yr data — `docs/RESULTS.md` has the ledger.)
 
 ## Verified results (artifact-linked)
 
 | Result | Numbers | Artifact |
 |---|---|---|
-| 10-yr NIFTY divergence study (2016–2026, 61k bars) | 918 trades · 58.3% WR · profit factor 2.37 · Sharpe 3.84 (backtest) | `nifty_10yr_combined_results.json` |
+| 10-yr NIFTY divergence study (2016–2026, 61k bars) | 918 trades · 58.3% WR · profit factor 2.37 · **Sharpe 2.31** (restated 27 Jul from a mis-annualized 3.84; backtest) | `nifty_10yr_combined_results.json` |
 | MACD-momentum basket (59–90 stock universe) | median per-stock Sharpe ≈ 1.9 **net of fees** (backtest; cross-checks on NASDAQ & Hang Seng) | `v12_comparison_results.json` |
 | Look-ahead audit | Sharpe restated 6.08 → 2.998 | `_lookahead_compare.py` · `docs/PROJECT_STATUS.md` |
 | Live paper engine (VPS, cron) | 90-stock universe · K=15 equal-weight · decay gate · loss-cluster sizing · daily forward record since 22 Jun 2026 — **Day 36 snapshot (27 Jul): −4.7% of pool, within backtest DD bounds; edge not yet confirmed forward — hence zero real capital** | `docs/paper_trading/momentum_basket_LIVE_record.md` |
