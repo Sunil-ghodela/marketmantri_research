@@ -36,11 +36,17 @@ _GATE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 _DIV_CACHE: dict[str, tuple[float, str]] = {}  # fp -> (expiry_ts, div_state)
 _DIV_CACHE_TTL = 120.0
 
+# Divergence recency: how many bars a detected divergence stays active.
+# Exit Lab 2026-06-19 tuned this to 6 (beats 15, OOS-robust) and STRATEGY.md documents 6 as
+# deployed — but the live engines shipped with 15 and, until 28 Jul, a dead detector. Aligned
+# to the tuned value on 28 Jul 2026 (same day the record restarted, so no mid-record change).
+DIV_RECENCY = 6
+
 
 def _div_fingerprint(df: pd.DataFrame) -> str:
     """Quick fingerprint from last 60 closes + params."""
     closes = df["Close"].tail(60).round(2).tolist()
-    raw = {"c": closes, "pl": 3, "pr": 3, "rec": 15, "hid": True}
+    raw = {"c": closes, "pl": 3, "pr": 3, "rec": DIV_RECENCY, "hid": True}
     return hashlib.md5(json.dumps(raw, sort_keys=True).encode()).hexdigest()[:16]
 
 
@@ -105,7 +111,7 @@ def _compute_div_state(df: pd.DataFrame) -> str:
 
     # Build state array with look-ahead fix (p2 + pivot_right)
     state = np.zeros(n, dtype=int)
-    recency = 15
+    recency = DIV_RECENCY
     pivot_right = 3
     for _, ev in events.iterrows():
         p2 = int(ev["second_pos"])

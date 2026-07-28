@@ -39,11 +39,12 @@ SCAN_GAP_S = 14 * 60           # ~15-minute cadence
 # ── Divergence cache (same pattern as momentum_portfolio_feed) ─────────────
 _DIV_CACHE: dict[str, tuple[float, str]] = {}
 _DIV_CACHE_TTL = 120.0
+DIV_RECENCY = 6   # tuned value (Exit Lab 2026-06-19); aligned with the basket feed 28 Jul 2026
 
 
 def _div_fingerprint(closes: list) -> str:
     tail = [round(c, 2) for c in closes[-60:]]
-    raw = {"c": tail, "pl": 3, "pr": 3, "rec": 15, "hid": True}
+    raw = {"c": tail, "pl": 3, "pr": 3, "rec": DIV_RECENCY, "hid": True}
     return hashlib.md5(json.dumps(raw, sort_keys=True).encode()).hexdigest()[:16]
 
 
@@ -115,7 +116,7 @@ def _compute_div_state(closes, highs, lows, volumes, labels=None) -> str:
 
     # Build state array with look-ahead fix
     state = np.zeros(n, dtype=int)
-    recency, pivot_right = 15, 3
+    recency, pivot_right = DIV_RECENCY, 3
     for _, ev in events.iterrows():
         p2 = int(ev["second_pos"])
         kind = str(ev["kind"])
