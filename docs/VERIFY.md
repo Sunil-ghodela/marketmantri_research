@@ -4,7 +4,9 @@ Every claim this project makes, with a **copy-paste command** and the **exact
 output you should see** (all runnable from the repo root, Python 3 only, no
 dependencies). If a claim isn't verifiable here, we don't make it.
 
-Last verified: 27 Jul 2026, against commit `b2b71e6`.
+Last verified: **28 Jul 2026** — C1–C10 all re-run against their stated output.
+C8–C10 are new (the two defects found on 28 Jul); C4 now carries the scope note that
+2.998 is the unconstrained 46-name portfolio, not the live K=15 configuration.
 
 ---
 
@@ -42,6 +44,18 @@ Expected: the Jul-W3 timeline line "Look-ahead bug FIXED. Sharpe 6.08 → 2.998
 (honest)", and the lag-comparison CSV whose header is
 `lag,window,trades,sharpe_net,...` — the permanent regression check.
 
+**Scope note (28 Jul 2026):** 2.998 is the *unconstrained* 46-name portfolio — an
+equal-weight average of every name's trades with no concurrency limit. The live
+engine runs **K=15** slots and the cap binds (the backtest implies ~20–25
+concurrent positions). It was previously described as "the REAL deployable number
+— live trading will match this"; that description is withdrawn. Check the
+constraint yourself:
+
+```bash
+python3 -c "import re;s=open('core/momentum_portfolio.py').read();print('live K =',re.search(r'^K = (\d+)',s,re.M).group(1))"
+```
+Expected: `live K = 15`. The K-capped backtest figure is `RESULTS.md` row #10.
+
 ## C5 — momentum basket portfolio: Sharpe 1.87 net / 2.18 gross
 
 ```bash
@@ -67,15 +81,67 @@ ls tests/
 Expected: 5 test files (portfolio, market phase, ATR trail, multi-TF MACD,
 phase log). Running them needs `pip install -r requirements.txt`.
 
-## C8 — the live paper record and its honest state
+## C8 — the live paper record, restated 28 Jul 2026
+
+The whole archived forward record ships in this repo, so check it yourself
+rather than trusting a summary line:
 
 ```bash
-head -20 docs/paper_trading/momentum_basket_LIVE_record.md
+python3 -c "import json,collections;d=json.load(open('archive/basket_forward_20260622_20260722.json'));t=d['trades'];print(len(t),'trades');print('pnl Rs',round(sum(x['pnl_abs'] for x in t)));print('WR',round(100*sum(1 for x in t if x['is_win'])/len(t),1),'%');print(collections.Counter(x['exit_reason'] for x in t))"
 ```
-Expected: the forward, timestamped record — started 22 Jun 2026, VPS-deployed
-25 Jun. Day-36 snapshot (27 Jul 2026): **−4.7% of pool, 33% WR, 211 trades** —
-in drawdown, at the edge of the backtest's ~5.1% max-DD expectation. That is
-why the project's own money-gate holds real capital at **zero**.
+Expected: `203 trades` · `pnl Rs -25997` · `WR 31.0 %` ·
+`Counter({'MACD Cross': 105, 'Max Hold': 63, 'Stop Loss': 35})`
+— i.e. **−5.20% of the ₹5L paper pool** over 22 Jun – 22 Jul.
+
+The previously published line was *Day 36 — −4.7%, 33% WR, 211 trades*. That
+count included 8 trades produced after the 22 Jul exit-recording regression,
+which also dropped 62 positions without writing a trade — so the count was
+incomplete and the loss understated. The clean window is the 203 above.
+
+## C9 — where the loss actually came from (and why max-hold looks good)
+
+```bash
+python3 -c "
+import json,collections
+t=json.load(open('archive/basket_forward_20260622_20260722.json'))['trades']
+for r in ('Stop Loss','MACD Cross','Max Hold'):
+    s=[x for x in t if x['exit_reason']==r]
+    print('%-11s n=%-4d Rs %+8.0f  WR %4.1f%%' % (r,len(s),sum(x['pnl_abs'] for x in s),100*sum(1 for x in s if x['is_win'])/len(s)))"
+```
+Expected:
+```
+Stop Loss   n=35   Rs   -31395  WR  0.0%
+MACD Cross  n=105  Rs   -16845  WR 21.0%
+Max Hold    n=63   Rs   +22243  WR 65.1%
+```
+Max-hold is the only profitable bucket — not because holding longer helps, but
+because of exit precedence (Stop Loss → MACD Cross → Bearish Div → Max Hold): a
+trade only *reaches* max-hold if it never fell 2% and never lost its MACD. It is
+the residual of trades that were already working.
+
+Note the stop-loss row averages **−2.69% against a 2.0% stop** — the live engine
+checks the stop on 15-minute closes, never intrabar, so gaps slip through it.
+
+## C10 — the divergence filter had never actually run live
+
+```bash
+grep -n "strftime" divergence_detector_v2.py | head -3
+grep -n "index=" core/momentum_portfolio_feed.py | head -3
+```
+Expected: the detector formats `df.index[...]` with `.strftime()`, and the feed
+now passes `index=df.index` into the frame it hands the detector. Before
+2026-07-28 it passed a bare `RangeIndex`, so every call that found an event
+raised `AttributeError` and a blanket `except Exception: return "none"` swallowed
+it — `div_state` was permanently `"none"` in **both** live engines from 11 Jun.
+
+Measured over 89 stocks × 23 hourly bars (23–28 Jul): **0 of 2047** evaluations
+returned a divergence state before the fix; after it, 30.8% bearish / 20.8%
+bullish, and **25 of 77 cross-up signals (32.5%) blocked**.
+
+Counterfactual on the archived record — exit each trade at the first bar its
+divergence state would have turned bearish: Σ pnl_pct **−78.0% → −36.7%**, win
+rate **31.0% → 38.9%**. So the missing filter explains roughly **half** the
+forward loss; with it the record would still have been negative.
 
 ---
 
@@ -87,7 +153,16 @@ why the project's own money-gate holds real capital at **zero**.
 - **Full re-runs need data** (Kite/OpenChart/yfinance) that is not shipped in
   this snapshot — scripts and `requirements.txt` are included; results JSONs
   are the committed evidence in the meantime.
-- **Restatement history is deliberate:** Sharpe 6.08→2.998 (look-ahead, Jul
-  W3) and 3.84→2.31 (annualization, 27 Jul) were both self-caught and
-  restated everywhere. The dated ledger of every number is
+- **Restatement history is deliberate — four now:** Sharpe 6.08→2.998
+  (look-ahead, Jul W3), 3.84→2.31 (annualization, 27 Jul), the divergence filter
+  found never to have run live (28 Jul, C10), and the forward record found partly
+  corrupted by an exit-recording regression, archived and restarted (28 Jul, C8).
+  All four were self-caught and restated here. The dated ledger of every number is
   [`RESULTS.md`](RESULTS.md).
+- **2.998 is not the live configuration.** It averages 46 names with no
+  concurrency cap; the live engine runs 15 slots and the cap binds. The
+  apples-to-apples K-capped figure is in [`RESULTS.md`](RESULTS.md) row #10 and
+  `basket_k15_report.md` (pending).
+- **The forward record restarted 28 Jul 2026.** The money-gate clock restarts
+  with it — the earlier window did not test the documented strategy, because the
+  divergence filter was inactive throughout.

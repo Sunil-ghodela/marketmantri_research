@@ -4,6 +4,27 @@
 > **Author:** Buffy (dev agent)  
 > **Purpose:** One document to see where we stand — no sugar, just the data.
 
+> ## ⚠️ Superseded in part — corrections of 28 Jul 2026
+>
+> This document is kept as written on 24 Jul. Four days later two engine defects
+> were found that change how several claims below should be read. Full write-up:
+> [`INCIDENT-2026-07-28.md`](INCIDENT-2026-07-28.md). Canonical numbers:
+> [`RESULTS.md`](RESULTS.md).
+>
+> - **Sharpe 2.998 is not the live configuration.** It averages all 46 names with
+>   no concurrency cap; the live engine runs **K=15** slots and the cap binds (the
+>   backtest implies ~20–25 concurrent positions). Every "2.998" below should be
+>   read as *the unconstrained 46-name portfolio backtest*, not as what live will
+>   produce. The K-capped figure is `basket_k15_report.md` / `RESULTS.md` #10.
+> - **"The edge is REAL … not a backtest artifact" (§ What's Genuinely Good) is
+>   not supported by the forward record.** The clean forward window (22 Jun –
+>   22 Jul) came in at **203 trades, 31.0% WR, −₹25,997 (−5.20% of pool)**.
+> - **That window did not test this strategy.** The V2 divergence filter — which
+>   the 2.998 backtest has switched on, and which `STRATEGY.md` calls *the profit
+>   engine* — was silently inactive in the live engine from 11 Jun to 28 Jul.
+> - **The forward paper record has been archived and restarted** (28 Jul), so the
+>   Day-36 numbers quoted below are superseded. Real capital: still zero.
+
 ---
 
 ## 1. Timeline — 4 Months in One Page

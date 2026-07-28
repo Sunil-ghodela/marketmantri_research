@@ -11,10 +11,36 @@ backtest is not live money. **This record is the money-gate** — ~3 months of f
 inevitable noise) is what lets us stand with maturity and a *system*, not a number. Goal: confirm the
 edge holds within expected bounds, the gate works live, and drawdowns are handled with discipline.
 
-## Config (as of Day 1)
+> ## ⚠️ Correction — 28 Jul 2026: this record has been archived and restarted
+>
+> Two defects were found in the engine on 28 Jul, both live for weeks. The full
+> write-up is [`../INCIDENT-2026-07-28.md`](../INCIDENT-2026-07-28.md).
+>
+> 1. **The divergence filter never ran.** The detector was handed an
+>    integer-indexed frame while it formats timestamps with `.strftime()`, so
+>    every call raised and a blanket `except` returned `"none"`. `div_state` was
+>    permanently `"none"` from 11 Jun. **So the config line below is wrong on two
+>    counts** — the live recency was 15, not 6, and the exit never fired at all.
+>    This window therefore did *not* test the documented strategy.
+> 2. **Exit recording broke on 22 Jul.** Stop-loss / cross-down / divergence
+>    exits stopped being written and 62 positions were dropped unrecorded.
+>
+> **The clean window (22 Jun – 22 Jul) is archived at
+> `archive/basket_forward_20260622_20260722.json`: 203 trades · 31.0% WR ·
+> −₹25,997 (−5.20% of pool).** The previously published "Day 36 — −4.7%, 33% WR,
+> 211 trades" was computed from the corrupted state; see `../VERIFY.md` C8.
+>
+> The forward record **restarted 28 Jul 2026** on the fixed engine, with the
+> divergence filter live for the first time. The ~3-month money-gate clock
+> restarts with it. Real capital: still **zero**.
+>
+> The daily log below is kept as the original, unedited record of what was
+> observed day by day. Read it as history, not as a performance claim.
+
+## Config (as of Day 1 — see the correction above)
 | | |
 |--|--|
-| Strategy | MACD momentum, sig5 entry (1H MACD 12/26/5 cross) + rec6 divergence exit |
+| Strategy | MACD momentum, sig5 entry (1H MACD 12/26/5 cross) + divergence exit — **the divergence exit was inactive for this entire window (defect B); live recency was 15, not 6** |
 | Universe | 90 tradeable stocks (Yahoo data; Kite upgrade pending) |
 | Max concurrent (K) | 15 |
 | Capital pool | ₹5,00,000 · sizing 1/15 (~₹33k) per position |

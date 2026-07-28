@@ -169,30 +169,33 @@ def scan_and_update(signals: dict, ltp: dict, now_ts: str | None = None) -> dict
                         reason = "Max Hold"
                 except Exception:
                     pass
-                if reason and px:
-                    pnl_pct = (px - entry) / entry * 100 if entry else 0.0
-                    pnl_abs = op["notional"] * pnl_pct / 100
-                    is_win = pnl_pct > 0
-                    # Track sizing info
-                    size_mult = op.get("size_mult", 1.0)
-                    d["trades"].append({
-                        "stock": stock,
-                        "entry_date": op.get("entry_date", ""),
-                        "entry_time": op.get("entry_time", ""),
-                        "entry_price": round(entry, 2),
-                        "exit_time": scan_bar or today,
-                        "exit_price": round(px, 2),
-                        "pnl_pct": round(pnl_pct, 2),
-                        "pnl_abs": round(pnl_abs, 2),
-                        "is_win": is_win,
-                        "exit_reason": reason,
-                        "size_mult": size_mult,
-                    })
-                    # Update cons_losses counter for sizing
-                    if is_win:
-                        d["cons_losses"] = 0
-                    else:
-                        d["cons_losses"] = d.get("cons_losses", 0) + 1
+            # NOTE: this block must stay a sibling of the if/elif chain above. Indenting it
+            # into the max-hold branch (as c7c3c45 did) silently kills the stop/cross/div
+            # exits and drops positions with no trade record.
+            if reason and px:
+                pnl_pct = (px - entry) / entry * 100 if entry else 0.0
+                pnl_abs = op["notional"] * pnl_pct / 100
+                is_win = pnl_pct > 0
+                # Track sizing info
+                size_mult = op.get("size_mult", 1.0)
+                d["trades"].append({
+                    "stock": stock,
+                    "entry_date": op.get("entry_date", ""),
+                    "entry_time": op.get("entry_time", ""),
+                    "entry_price": round(entry, 2),
+                    "exit_time": scan_bar or today,
+                    "exit_price": round(px, 2),
+                    "pnl_pct": round(pnl_pct, 2),
+                    "pnl_abs": round(pnl_abs, 2),
+                    "is_win": is_win,
+                    "exit_reason": reason,
+                    "size_mult": size_mult,
+                })
+                # Update cons_losses counter for sizing
+                if is_win:
+                    d["cons_losses"] = 0
+                else:
+                    d["cons_losses"] = d.get("cons_losses", 0) + 1
                 realized = round(sum(t["pnl_abs"] for t in d["trades"]), 2)
                 d["equity"].append({"ts": scan_bar or today, "value": realized})
                 del d["open"][stock]
@@ -202,7 +205,11 @@ def scan_and_update(signals: dict, ltp: dict, now_ts: str | None = None) -> dict
             for stock, sg in signals.items():
                 if stock in d["open"]:
                     continue
-                if sg.get("cross") != "up" or sg.get("div_state") == "bearish":
+                if sg.get("cross") != "up":
+                    continue
+                if sg.get("div_state") == "bearish":   # divergence blocks the entry — log it
+                    d["skipped"].append({"stock": stock, "bar": scan_bar,
+                                         "reason": "bearish divergence active"})
                     continue
                 if sg.get("gated"):                       # decay gate: stock benched (recent 3mo weak)
                     d["skipped"].append({"stock": stock, "bar": scan_bar, "reason": "decay gate (recent 3mo weak)"})

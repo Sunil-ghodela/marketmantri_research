@@ -68,13 +68,17 @@ def _compute_div_state(df: pd.DataFrame) -> str:
     e26 = close.ewm(span=26, adjust=False).mean()
     macd_h = (e12 - e26 - (e12 - e26).ewm(span=9, adjust=False).mean()).values
 
+    # The V2 detector formats df.index[...] with .strftime() when it builds an event row, so it
+    # needs the real DatetimeIndex. Passing a bare RangeIndex made every call raise
+    # AttributeError, which the except below turned into a permanent "none" — divergence was
+    # dead in this engine from the V2 commit (9529eff, 11 Jun) until 28 Jul.
     prep = pd.DataFrame({
         "close": close.values,
         "high": df["High"].values.astype(float),
         "low": df["Low"].values.astype(float),
         "volume": df["Volume"].values.astype(float),
         "macd_hist": macd_h,
-    })
+    }, index=df.index)
 
     try:
         events = detect_divergences_v2(
@@ -87,7 +91,11 @@ def _compute_div_state(df: pd.DataFrame) -> str:
             confirmation_bars=2, confirmation_ratio=0.6,
             include_hidden=True, use_volume_confirmation=False,
         )
-    except Exception:
+    except Exception as e:
+        # Never swallow silently again — a permanently-failing detector is indistinguishable
+        # from "no divergence" and that is exactly how this went unnoticed for seven weeks.
+        print("[div] detector failed (%s: %s) — treating as 'none'" % (type(e).__name__, e),
+              flush=True)
         _DIV_CACHE[fp] = (now + _DIV_CACHE_TTL, "none")
         return "none"
 

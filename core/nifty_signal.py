@@ -47,7 +47,20 @@ def _div_fingerprint(closes: list) -> str:
     return hashlib.md5(json.dumps(raw, sort_keys=True).encode()).hexdigest()[:16]
 
 
-def _compute_div_state(closes, highs, lows, volumes) -> str:
+def _div_index(closes, labels) -> pd.DatetimeIndex:
+    """A DatetimeIndex for the detector. It only uses the index to format event labels, but it
+    does so with .strftime(), so an integer index makes every call raise. Prefer the real bar
+    labels; fall back to a synthetic 15m range so the detector still runs for callers that
+    have no timestamps to hand.
+    """
+    if labels is not None and len(labels) == len(closes):
+        idx = pd.to_datetime(pd.Series(labels), errors="coerce")
+        if idx.notna().all():
+            return pd.DatetimeIndex(idx)
+    return pd.date_range("2000-01-01", periods=len(closes), freq="15min")
+
+
+def _compute_div_state(closes, highs, lows, volumes, labels=None) -> str:
     """Compute current bar's divergence state from NIFTY 15m OHLC data.
     Returns 'bearish', 'bullish', or 'none'.
     Uses V2 detector with look-ahead fix (pivot_right=3).
@@ -68,13 +81,16 @@ def _compute_div_state(closes, highs, lows, volumes) -> str:
     e26 = c.ewm(span=26, adjust=False).mean()
     macd_h = (e12 - e26 - (e12 - e26).ewm(span=9, adjust=False).mean()).values
 
+    # The V2 detector calls .strftime() on df.index when it builds an event row, so it needs
+    # the real timestamps. Without them every call raised AttributeError and the except below
+    # made it a permanent "none" — divergence was dead here too, since 9529eff (11 Jun).
     prep = pd.DataFrame({
         "close": np.array(closes, dtype=float),
         "high": np.array(highs, dtype=float),
         "low": np.array(lows, dtype=float),
         "volume": np.array(volumes, dtype=float),
         "macd_hist": macd_h,
-    })
+    }, index=_div_index(closes, labels))
 
     try:
         events = detect_divergences_v2(
@@ -87,7 +103,9 @@ def _compute_div_state(closes, highs, lows, volumes) -> str:
             confirmation_bars=2, confirmation_ratio=0.6,
             include_hidden=True, use_volume_confirmation=False,
         )
-    except Exception:
+    except Exception as e:
+        print("[nifty-div] detector failed (%s: %s) — treating as 'none'"
+              % (type(e).__name__, e), flush=True)
         _DIV_CACHE[fp] = (now + _DIV_CACHE_TTL, "none")
         return "none"
 
@@ -258,7 +276,7 @@ def scan(force: bool = False) -> dict | None:
         labels = [str(x) for x in df.index]
         sig = signal_1h(closes, labels)
         # v1.1: compute divergence state
-        sig["div_state"] = _compute_div_state(closes, highs, lows, volumes)
+        sig["div_state"] = _compute_div_state(closes, highs, lows, volumes, labels)
         ltp = float(closes[-1]) if closes else 0.0
     except Exception:
         return None
