@@ -30,7 +30,11 @@ _LOCK = threading.Lock()
 POOL_INR = 500_000.0     # paper capital pool
 K = 15                   # max concurrent positions
 STOP_PCT = 2.0
-MAX_HOLD_DAYS = 3
+# Max hold in ENGINE BARS (~1H each): 18 x 1H = 3 trading days — matches the backtest's
+# 75 x 15m bars and the NIFTY engine's MAX_HOLD_BARS_1H. The old calendar-day count
+# ((today - entry_date).days >= 3) fired early across weekends: 45 of 63 archived
+# max-hold exits had held fewer than 3 trading days, mostly Thu/Fri entries.
+MAX_HOLD_BARS = 18
 
 
 # ── Sizing multiplier: Loss-2→2x, Loss-3→2.5x, Loss-4→3x ────────────
@@ -152,6 +156,8 @@ def scan_and_update(signals: dict, ltp: dict, now_ts: str | None = None) -> dict
         # ── EXITS (check every open position) ──
         for stock in list(d["open"].keys()):
             op = d["open"][stock]
+            if new_bar:
+                op["bars_held"] = op.get("bars_held", 0) + 1
             entry = op["entry_price"]
             px = ltp.get(stock)
             sg = signals.get(stock, {})
@@ -162,13 +168,8 @@ def scan_and_update(signals: dict, ltp: dict, now_ts: str | None = None) -> dict
                 reason = "MACD Cross"
             elif new_bar and sg.get("div_state") == "bearish":
                 reason = "Bearish Div"
-            elif new_bar:
-                try:
-                    ed = datetime.date.fromisoformat(op.get("entry_date", today))
-                    if (datetime.date.today() - ed).days >= MAX_HOLD_DAYS:
-                        reason = "Max Hold"
-                except Exception:
-                    pass
+            elif new_bar and op.get("bars_held", 0) >= MAX_HOLD_BARS:
+                reason = "Max Hold"
             # NOTE: this block must stay a sibling of the if/elif chain above. Indenting it
             # into the max-hold branch (as c7c3c45 did) silently kills the stop/cross/div
             # exits and drops positions with no trade record.
@@ -225,6 +226,7 @@ def scan_and_update(signals: dict, ltp: dict, now_ts: str | None = None) -> dict
                         "entry_date": today,
                         "entry_time": scan_bar,
                         "entry_price": round(px, 2),
+                        "bars_held": 0,
                         "notional": round(base_notional * size_mult, 2),
                         "size_mult": size_mult,
                     }

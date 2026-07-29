@@ -110,6 +110,22 @@ def test_bearish_div_entry_skip_is_logged(tmp_path):
         "bearish-div entry skip was not logged"
 
 
+def test_max_hold_counts_engine_bars_not_calendar_days(tmp_path):
+    """Max-hold fires after MAX_HOLD_BARS new bars, weekend-proof.
+
+    Regression: the old rule used (date.today() - entry_date).days >= 3, so Thu/Fri
+    entries were cut after 0-2 trading days (45 of 63 archived max-hold exits).
+    """
+    _fresh(tmp_path)
+    mp.scan_and_update({"SBIN": sig("up", bar="b0")}, {"SBIN": 100.0})
+    for i in range(1, mp.MAX_HOLD_BARS):          # bars 1..17 — must survive
+        v = mp.scan_and_update({"SBIN": sig("none", bar="b%d" % i)}, {"SBIN": 101.0})
+    assert v["kpi"]["open_count"] == 1, "closed before MAX_HOLD_BARS"
+    v = mp.scan_and_update({"SBIN": sig("none", bar="b%d" % mp.MAX_HOLD_BARS)}, {"SBIN": 101.0})
+    assert v["kpi"]["open_count"] == 0
+    assert v["trades"][0]["exit_reason"] == "Max Hold"
+
+
 def test_idempotent_same_bar_no_double_open(tmp_path):
     _fresh(tmp_path)
     mp.scan_and_update({"SBIN": sig("up", bar="b1")}, {"SBIN": 100.0})

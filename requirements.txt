@@ -1,6 +1,6 @@
 kiteconnect>=5.0.0
 openchart>=0.2.0
-yfinance>=0.2.40
+yfinance==1.4.1   # PINNED: its tz behaviour changed bar labels mid-record (UTC vs IST); production runs 1.4.1
 backtesting>=0.3.3
 ta>=0.11.0
 ipython>=8.0
