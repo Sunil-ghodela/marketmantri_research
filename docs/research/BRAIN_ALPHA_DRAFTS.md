@@ -158,6 +158,27 @@ available, or the throttle idea on a working base. Tutorial/certificate track in
 
 ---
 
+### 31 Jul 2026 — automated reproduction (`tools_brain_api.py`, no manual clicks)
+
+System test of the new API harness: authenticate → submit → poll → metrics, all from code
+(account SK98175, no biometric). The three runs **reproduce the 29-Jul manual session on
+independent re-simulation** — same settings (USA/TOP3000/D1, subind neutral, decay 4, trunc 0.08,
+startDate 2019):
+
+| run | expression | Sharpe | DD | note |
+|---|---|--:|--:|---|
+| Alpha 1 (momentum base) | `rank(hist) + rank(ts_delta(hist,3))` | **−0.67** | 26.8% | inverts on US daily (manual logged −0.76 — same sign) |
+| Alpha 2 (modifier on momentum base) | `rank(hist) * winsorize(agree,2)` | **−0.86** | 28.4% | worse — modifying an inverted base |
+| champion (reversal base × modifier) | `-(rank(hist)+rank(ts_delta(hist,3))) * winsorize(agree,2)` | **+0.80** | **7.3%** | sign flips +; modifier's value = **DD 26%→7%** |
+
+**What this confirms:** (1) the harness works end-to-end; (2) the divergence proxy
+`ts_corr(close,hist,20)` carries real information — its value shows up as **risk reduction**
+(drawdown collapses 26%→7% on the reversal base), the same mechanism we claim for the NSE engine
+(divergence → fewer/better entries → smoother PnL). **What it does NOT change:** 0.80 < 1.25 bar,
+`LOW_SUB_UNIVERSE_SHARPE` FAIL (0.12) — edge is concentrated, not broad — and this whole family
+already **OOS-failed** (29 Jul, 2023 test −0.29, 2020-vol artifact). Reproduction/validation, not a
+new edge. Nothing submitted. Discipline held: these were re-runs of a closed hypothesis, not new bets.
+
 ## Graveyard recycling plan — queue for next sessions
 
 **Premise:** a graveyard hypothesis is dead *in its context* (NSE/1H/our engine), not
