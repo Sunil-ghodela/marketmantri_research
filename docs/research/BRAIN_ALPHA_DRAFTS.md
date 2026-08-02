@@ -213,3 +213,36 @@ kept out of public material by standing decision).
 **Standing note:** the best ROI on BRAIN is likely NEW datasets (analyst, sentiment,
 fundamentals), not recycling price-volume ideas — PEAD is first precisely because it
 brings a new dataset.
+
+---
+
+### 2 Aug 2026 — Session 2: PEAD (queue #1) — PRE-REGISTRATION (sims se pehle commit)
+
+**Hypothesis:** post-earnings-announcement drift — jis stock ka actual quarterly
+EPS consensus se upar aaya, wo announcement ke baad hafton tak peers se behtar
+chalta hai (documented anomaly; NSE me survivorship-illusion me mara tha,
+yahan survivorship-free universe + asli estimates data hai).
+
+**Fields (analyst4, USA/TOP3000/D1):** `actual_eps_value_quarterly` (cov 1.0),
+`anl4_qfv4_eps_mean` (cov 1.0), variant ke liye
+`stddev_reported_eps_quarterly_estimate` (cov 0.56).
+
+**Settings:** session-1 convention — subind neutral, decay 4, trunc 0.08,
+testPeriod P1Y **sealed** (stats-printer train-only; test block final look tak
+code me hi chhupa hai).
+
+**Sim plan (cap 7, ek knob ek baar):**
+1. base: `rank((actual_eps_value_quarterly - anl4_qfv4_eps_mean) / close)`
+2. event-window: wahi, sirf announcement ke 60 din tak
+   (`days_from_last_change(actual_eps_value_quarterly)` gate)
+3. SUE scaling: close ki jagah stddev-of-estimates se bhaag (coverage cost check)
+4. freshness weight: surprise × linear fade over 60d
+5. decay 4→8 champion pe
+6–7. reserve (error-fix/insight only — naya idea NAHI)
+
+**Champion rule (abhi likha):** best train **fitness**, shart: turnover 1–70%,
+train Sharpe ≥ 1.0 prefer. Sims ke baad champion yahin declare hoga, TABHI test.
+
+**Verdict rule (abhi likha, test-look se pehle):** champion ka TEST Sharpe ≥ 0.5
+AND sign train se match → zinda (submission-checks tak jayega). Warna → REJECTED,
+log, band — koi post-test tweak nahi, kabhi nahi.
