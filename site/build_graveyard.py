@@ -7,14 +7,14 @@ import html as H
 ALL = json.load(open("graveyard.json"))
 
 # Only entries that were actually TESTED AND KILLED count as rejections. Two of
-# these filters were kept, one was never tested, one was a bug we fixed — they
+# these filters were kept, one was never tested, one was a bug I fixed — they
 # stay on the page (they are part of the record) but they are NOT rejections and
 # must never inflate the headline number. Drift caught 2 Aug 2026.
 data = [d for d in ALL if d.get("s", "rejected") == "rejected"]
 other = [d for d in ALL if d.get("s", "rejected") != "rejected"]
 LABEL = {"kept": "kept — it survived the test",
          "abandoned": "never tested — abandoned",
-         "fixed": "a defect we fixed, not a hypothesis"}
+         "fixed": "a defect I fixed, not a hypothesis"}
 
 cats = []
 for d in data:
@@ -72,7 +72,7 @@ notrej_block = (
     f'<h2>Not rejections</h2><span class="cnt">{len(other)} entries</span></div>'
     f'<p class="lead">These were logged alongside the graveyard but they are not '
     f'rejections, so they are excluded from the {len(data)} above: two filters that '
-    f'passed and are still in the strategy, one idea never tested, and one defect we '
+    f'passed and are still in the strategy, one idea never tested, and one defect I '
     f'found and fixed. Keeping them visible is the point — the count stays honest '
     f'only if the exclusions are published too.</p>{notrej}</div>')
 
@@ -81,7 +81,7 @@ page = f"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Graveyard — {len(data)} documented rejections</title>
-<meta name="description" content="Every hypothesis we tested and killed: what it was, the kill-shot, and the lesson. The rejection log is the moat.">
+<meta name="description" content="Every hypothesis I tested and killed: what it was, the kill-shot, and the lesson. The rejection log is the moat.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body><div class="wrap">
@@ -97,7 +97,7 @@ page = f"""<!DOCTYPE html>
 <div class="kicker">rejection ledger · updated 2 Aug 2026</div>
 <h1>The Graveyard <span class="dim">— {len(data)} documented rejections</span></h1>
 <p class="lead">Every entry has three parts: what the idea was, the specific test
-that killed it, and what it taught us. Most deaths share a cause —
+that killed it, and what it taught me. Most deaths share a cause —
 <span class="mono">edge &lt; friction</span>, a 2-year sample lying, or overfit.
 Deployed parameters are redacted; everything else is as it happened.</p>
 </header>

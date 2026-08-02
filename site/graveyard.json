@@ -103,7 +103,7 @@
   "c": "Profit targets",
   "w": "Exit at +0.4% gain to capture MFE on reversal trades",
   "k": "2yr looked great (Sharpe 1.41→1.52). 10yr OOS: total return −67%. Those few fat-tail winners (+3-5%) carry the entire strategy. Profit-target caps them",
-  "l": "A 2-year window fooled us twice. The 10-year OOS told the truth. Textbook OOS save",
+  "l": "A 2-year window fooled me twice. The 10-year OOS told the truth. Textbook OOS save",
   "d": "Jun–Jul 2026",
   "s": "rejected"
  },
@@ -335,7 +335,7 @@
  {
   "n": "Cross-sectional MACD momentum (US, BRAIN)",
   "c": "Complete strategies",
-  "w": "Our momentum family, tested on independent US data & infra.",
+  "w": "My momentum family, tested on independent US data & infra.",
   "k": "Train Sharpe 1.00 after iteration — sealed OOS test: −0.29. 2020-regime artifact. Not submitted.",
   "l": "In-sample iteration converges on the regime, not the edge. Seal the test period first.",
   "d": "29 Jul 2026",

@@ -24,7 +24,7 @@ for six weeks — and how a trade that <i>could not exist</i> finally exposed it
 </header>
 
 <h2>The setup</h2>
-<p>Our basket engine's exit stack had a "profit engine": exit longs when a
+<p>My basket engine's exit stack had a "profit engine": exit longs when a
 bearish divergence appears (price making highs the momentum doesn't confirm).
 The backtest loved it. The engine was deployed, the record was running, life was good.</p>
 
@@ -45,7 +45,7 @@ It was running the backtested strategy minus its most important rule —
 and nothing, anywhere, said so.</blockquote>
 
 <h2>The counterfactual</h2>
-<p>We replayed every archived trade's holding window asking: "where would the
+<p>I replayed every archived trade's holding window asking: "where would the
 divergence exit have fired?" Answer: it would have rescued roughly <b>half the
 bleed</b> — it fired before the stop-loss in 24 of 25 stop-outs. The other half
 of the bleed was real strategy weakness. Both facts mattered; neither was visible
@@ -64,9 +64,9 @@ can't trust is worse than no record at all.</p>
 it. A trade can never be unexplainable again.</li>
 <li><b>Exceptions may not fail silent</b> in a live signal path. A rule that errors
 must scream, not shrug.</li>
-<li><b>"Deployed" ≠ "running".</b> We now verify that each rule actually <i>fires</i>
+<li><b>"Deployed" ≠ "running".</b> I now verify that each rule actually <i>fires</i>
 in production, not just that the code shipped.</li>
-<li><b>Celebration comes after verification.</b> Always. We got this wrong more
+<li><b>Celebration comes after verification.</b> Always. I got this wrong more
 than once; it's expensive every time.</li>
 </ul>
 
