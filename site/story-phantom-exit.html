@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The phantom exit — how a silent bug traded for six weeks</title>
+<meta name="description" content="A forensic story: the 'profit engine' of a live strategy threw an exception on every call for six weeks — and a blanket except made it invisible.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body><div class="wrap">
+<nav>
+  <div class="brand">the honest <span>quant lab</span></div>
+  <a href="index.html">Method</a>
+  <a href="graveyard.html">Graveyard</a>
+  <a href="experiment.html">Live experiment</a>
+  <a href="story-phantom-exit.html" class="on">Stories</a>
+  <a href="about.html">About</a>
+</nav>
+
+<h1>The phantom exit</h1>
+<p class="lead">How the most important rule of a live strategy silently did nothing
+for six weeks — and how a trade that <i>could not exist</i> finally exposed it.</p>
+
+<h2>The setup</h2>
+<p>Our basket engine's exit stack had a "profit engine": exit longs when a
+bearish divergence appears (price making highs the momentum doesn't confirm).
+The backtest loved it. The engine was deployed, the record was running, life was good.</p>
+
+<h2>The symptom</h2>
+<p>The forward record bled for a month: 203 trades, 31% win-rate, meaningfully
+negative. The exit breakdown was strange — <b>not a single divergence exit had
+ever fired.</b> Positions only ever left through the stop-loss, the cross-back,
+or max-hold. The profit engine was a ghost.</p>
+
+<h2>The cause</h2>
+<p>The divergence detector formatted timestamps from the dataframe index. The live
+path built that frame from bare arrays — so the index was integers. Every call
+raised an <span class="mono">AttributeError</span>… which a blanket
+<span class="mono">except: return "none"</span> swallowed. For six weeks, on every
+bar, for every stock, the answer was silently "no divergence."</p>
+<blockquote>The live engine was not running the strategy that was backtested.
+It was running the backtested strategy minus its most important rule —
+and nothing, anywhere, said so.</blockquote>
+
+<h2>The counterfactual</h2>
+<p>We replayed every archived trade's holding window asking: "where would the
+divergence exit have fired?" Answer: it would have rescued roughly <b>half the
+bleed</b> — it fired before the stop-loss in 24 of 25 stop-outs. The other half
+of the bleed was real strategy weakness. Both facts mattered; neither was visible
+before the forensics.</p>
+
+<h2>The phantom</h2>
+<p>Then the twist. One closed trade in the record showed exit reason
+<span class="mono">"Bearish Div"</span> — dated <i>during</i> the broken era, when
+that exit was provably impossible. No live code path could have produced it.
+The lead: a seeding script had rewritten exit reasons on old trades. A record you
+can't trust is worse than no record at all.</p>
+
+<h2>What changed</h2>
+<ul class="rules">
+<li><b>Audit trail:</b> every exit now stores a snapshot of the signal that caused
+it. A trade can never be unexplainable again.</li>
+<li><b>Exceptions may not fail silent</b> in a live signal path. A rule that errors
+must scream, not shrug.</li>
+<li><b>"Deployed" ≠ "running".</b> We now verify that each rule actually <i>fires</i>
+in production, not just that the code shipped.</li>
+<li><b>Celebration comes after verification.</b> Always. We got this wrong more
+than once; it's expensive every time.</li>
+</ul>
+
+<p style="margin-top:26px"><span class="badge">more stories coming</span> —
+"Sharpe 2.31's post-mortem" and "The rule that flipped" are being written.</p>
+
+<div class="foot">Research log only — not investment advice. ·
+<a href="graveyard.html">the graveyard</a> · <a href="experiment.html">live experiment</a></div>
+</div></body></html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live experiment — paper vs backtest, weekly scorecard</title>
+<meta name="description" content="Two paper experiments running live. Every week we publish what the paper record did versus what the backtest predicted — including the weeks they disagree.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body><div class="wrap">
+<nav>
+  <div class="brand">the honest <span>quant lab</span></div>
+  <a href="index.html">Method</a>
+  <a href="graveyard.html">Graveyard</a>
+  <a href="experiment.html" class="on">Live experiment</a>
+  <a href="story-phantom-exit.html">Stories</a>
+  <a href="about.html">About</a>
+</nav>
+
+<h1>The live experiment <span class="badge live">● running</span></h1>
+<p class="lead">Backtests are promises. Paper records are receipts. Two engines run
+unattended on a VPS; every trade is recorded fees-net with a full audit trail
+(each exit carries a snapshot of the signal that caused it). This page gets a new
+row every week — <b>whatever the numbers say.</b></p>
+
+<h2>Experiment 1 — index engine (started 3 Aug 2026)</h2>
+<div class="card">
+<p>A 1-hour MACD-cross family engine on NIFTY (exact parameters private).
+One shadow record produces <b>three books</b> simultaneously:</p>
+<table>
+<tr><th>Book</th><th>What it tests</th><th>Backtest expectation (10yr, fees-net)</th></tr>
+<tr><td class="mono">flat 1x</td><td>the raw signal</td><td>thin — the control group</td></tr>
+<tr><td class="mono">W/L-sized</td><td>loss-streak sizing as leverage</td><td>every year positive; deep drawdowns</td></tr>
+<tr><td class="mono">streak-filter</td><td>loss-streak as entry <i>selection</i></td><td>best risk-adjusted; fails some years</td></tr>
+</table>
+<p style="margin-top:12px"><b>Gate (pre-registered, decided 2 Aug):</b> after 4 weeks —
+net positive <b>AND</b> win-rate / avg-trade / drawdown inside the backtest's range
+<b>AND</b> zero unexplained exits. Anything less → the engine goes to the graveyard.
+Verdict due <b>~30 Aug 2026</b>.</p>
+</div>
+
+<h2>Experiment 2 — stock basket (fresh record since 28 Jul 2026)</h2>
+<div class="card">
+<p>A 15-slot long-only momentum basket over a ~90-name NSE universe.
+Its 10-year backtest is positive every single year fees-net — but the honest
+version of that claim is <i>"the recent-year edge is about half the golden-era
+edge."</i> The paper record exists to find out which year 2026 wants to be.
+<b>Checkpoint: 29 Aug 2026</b> (30 days of clean record).</p>
+</div>
+
+<h2>Weekly scorecard</h2>
+<div class="card">
+<table>
+<tr><th>Week</th><th>Index engine (3 books)</th><th>Basket (net)</th><th>Verdict-notes</th></tr>
+<tr><td class="mono">W0 · 2 Aug</td><td>deployed · 0 trades · books at 0</td>
+<td>+₹3,438 net (first 4 days)</td>
+<td>baseline row — engines armed, gates set</td></tr>
+</table>
+<p style="margin-top:10px;color:var(--muted);font-size:.9rem">Next row: ~9 Aug.
+If a week is ugly, the row still gets written. That's the point.</p>
+</div>
+
+<div class="foot">Research log only — not investment advice, no signals, no money
+managed. · <a href="graveyard.html">the graveyard</a></div>
+</div></body></html>

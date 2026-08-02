@@ -1,0 +1,330 @@
+[
+ {
+  "n": "V11 \u2014 Bearish Divergence Skip on the pullback engine",
+  "c": "Pullback-engine tweaks",
+  "w": "Skip entry when 15m bearish divergence is active",
+  "k": "Zero impact on 10yr backtest \u2014 V2 detector found 642 bearish events globally but NONE within recency window of a trade surviving other filters (cooldown, distance, astro). Entry conditions structurally incompatible with ",
+  "l": "A filter only matters if the signal actually fires. If your entry is already rare (~16 trades/yr), divergence almost never overlaps with it",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "V12 \u2014 New Moon MACD Momentum Entry",
+  "c": "Pullback-engine tweaks",
+  "w": "When main conditions NOT met but T-2 New Moon window + MACD hist flip positive \u2192 enter",
+  "k": "Sharpe 1.826\u21921.7996 (neutral-to-negative). DD 3.59%\u21925.26% (+46%). Added 12 extra trades in 10yr but quality was lower",
+  "l": "Forcing extra entries degrades quality. New Moon edge works as sizing (V10 Moon 2x), not as entry trigger",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "V13 \u2014 1H MACD Filter on the pullback engine",
+  "c": "Pullback-engine tweaks",
+  "w": "Skip trades when 1H MACD state is \"red + bearish\" (43/164 = 26% of trades)",
+  "k": "Never completed full isolated standalone test. V13 code was committed but the attention shifted to the standalone MACD Momentum strategy before the test ran. Still pending (likely unnecessary now \u2014 momentum is the primar",
+  "l": "Scope creep. The momentum breakthrough de-prioritized this",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Astro Nakshatra Gate (the pullback engine V6)",
+  "c": "Pullback-engine tweaks",
+  "w": "Skip certain nakshatras (lunar constellations)",
+  "k": "Curve-fit. Bottom-5 don't persist across halves (overlap 1/5, rank-corr \u22120.09). Not significant (p=0.125). Astro ablation inconsistent across instruments",
+  "l": "P-value and cross-half validation catch overfits every time",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "up_ratio Window=20 (the pullback engine Core)",
+  "c": "Pullback-engine tweaks",
+  "w": "up_ratio(20) is the core entry signal \u2014 detects upward acceleration over 20 bars",
+  "k": "Sharp overfit peak \u2014 Sharpe 1.79 at 20 collapses to ~1.0 at 16/26 and ~0.65 at 12/34. A knife-edge",
+  "l": "If moving a parameter by 20% kills the edge, it's not an edge \u2014 it's a fit. Momentum's params are smooth plateaus; this was a spike",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Profit Target 5% (the pullback engine V3)",
+  "c": "Pullback-engine tweaks",
+  "w": "Exit at +5% profit",
+  "k": "Inert. 0.05/0.08/0.15/OFF all = 1.79 Sharpe. Rarely triggers. Pure decoration",
+  "l": "In a strategy averaging +0.37%/trade, a 5% target is never hit. Dead parameter from the start",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "MACD Cross Exit OFF",
+  "c": "Momentum entry/exit",
+  "w": "Remove the MACD-cross exit. Let bearish divergence + max-hold handle all exits",
+  "k": "Sharpe 1.41\u21920.47. DD 2.13%\u21925.68% (2.7\u00d7). The cross-exit is risk control \u2014 it cuts losers early. Without it, losers run to max-hold and blow up",
+  "l": "The exit that \"loses money\" is insurance. Remove insurance \u2192 worse outcomes",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "MACD Cross Exit (loss-only mode)",
+  "c": "Momentum entry/exit",
+  "w": "Only exit via MACD cross if currently in loss. Winners exit only on bearish div",
+  "k": "Sharpe 1.41\u21921.23. Winners held past the cross then reversed into loss \u2192 deeper losses",
+  "l": "The cross happens near the top. Holding past it doesn't capture more \u2014 you give back gains",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "15m Entry Confirm",
+  "c": "Momentum entry/exit",
+  "w": "Confirm 1H MACD cross with 15m MACD cross before entering",
+  "k": "Marginally worse across all metrics. The 15m is PART of the chop, not a chop detector \u2014 in chop BOTH oscillate",
+  "l": "Double confirmation removes trades without improving quality",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "15m Exit (faster exits)",
+  "c": "Momentum entry/exit",
+  "w": "Exit on 15m MACD cross instead of 1H",
+  "k": "Sharpe 1.41\u21920.78. 15m exit = noisy \u2192 cuts winners before bearish-div exit fires. The 1H lag is a FEATURE, not a bug",
+  "l": "The profit engine (bearish div exit) needs time to trigger. Faster exits kill profit before the engine fires",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "ADX Chop-Gate (entry)",
+  "c": "Momentum entry/exit",
+  "w": "Skip entry if ADX < 15/20/22/25 (chop filter)",
+  "k": "ALL thresholds worse. Momentum enters EARLY (MACD cross = trend birth, ADX still low). ADX\u226520/25 = enter after trend established = miss the early entry",
+  "l": "At entry time, \"chop that fails\" and \"early trend that runs\" look identical. Can't filter one without killing the other",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Profit Target +0.4% on Momentum",
+  "c": "Profit targets",
+  "w": "Exit at +0.4% gain to capture MFE on reversal trades",
+  "k": "2yr looked great (Sharpe 1.41\u21921.52). 10yr OOS: total return \u221267%. Those few fat-tail winners (+3-5%) carry the entire strategy. Profit-target caps them",
+  "l": "A 2-year window fooled us twice. The 10-year OOS told the truth. Textbook OOS save",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Profit Target +1.0% on Momentum",
+  "c": "Profit targets",
+  "w": "Same idea, higher target",
+  "k": "10yr OOS: total return \u221233% for +0.1 Sharpe improvement. 1/3rd of profit gone",
+  "l": "Letting winners run IS the edge. No cap improves it",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Overnight Short Put Spread (Options)",
+  "c": "Complete strategies",
+  "w": "Sell 0.5% OTM put, buy 2.5% OTM put weekly, enter at close, exit at next-day open",
+  "k": "Real open fills from NSE bhavcopy: Sharpe \u22121.78. The gap-down tail cancels the drift. Model assumed smooth repricing; reality = IV spike + panic first print = gap nights killed everything. ALL five structures tested (sel",
+  "l": "\"Modeled fills\" are not real fills. Real data BEFORE deploying capital is the discipline that separates systems from gambles. Edge < friction \u2014 600 nights showed a REAL tiny drift ",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Overnight Cash Drift",
+  "c": "Complete strategies",
+  "w": "Capture NIFTY overnight gap with futures",
+  "k": "Drift is real (+0.34% median) but uninvestable after transaction costs. Same \"edge < friction\" problem as options",
+  "l": "\"Real\" \u2260 \"tradable\"",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "PEAD (Post-Earnings Announcement Drift)",
+  "c": "Complete strategies",
+  "w": "Buy stocks after positive earnings surprise, short after negative. Hold 60 days",
+  "k": "Survivorship illusion. Event study showed Q5 best surprise = +2.76% over 60d. BUT long-short (Q5\u2212Q1, cancels survivorship + market beta): Net Sharpe 0.22 \u2014 first half 0.07. Clean FAIL",
+  "l": "The event-study's \"drift\" was large-cap outperformance, NOT earnings alpha. Survivorship-neutral test caught the illusion",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "1m Scalp",
+  "c": "Complete strategies",
+  "w": "Ultra-short mean-reversion scalping on 1-minute data",
+  "k": "Fees kill edge. 0-for-12 tested. Claim not reproducible",
+  "l": "1m strategies in Indian markets = fee-farming for the broker",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "5m Unified Strategy",
+  "c": "Complete strategies",
+  "w": "ADX-regime-adaptive scalper (choppy vs trend modes)",
+  "k": "Claim withdrawn \u2014 results not reproducible. Strategy was overfit/curve-fit. Honest withdrawal documented",
+  "l": "Extraordinary claims require extraordinary evidence. This one didn't survive scrutiny",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "NIFTY Futures Shorts (Bidirectional)",
+  "c": "Complete strategies",
+  "w": "Extend long-only momentum to include shorts",
+  "k": "Bidirectional test showed no edge \u2014 short side carries down-years worse than long-only. 2026 BOTH +13% vs long-only \u22121% but over 10yr, shorts degrade Sharpe",
+  "l": "Momentum works asymmetrically in Indian markets \u2014 long-only is the edge",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "MTF Candle Funnel",
+  "c": "Complete strategies",
+  "w": "Nested TF confluence \u2014 enter green-1h only when month/week/day all above period-open",
+  "k": "Faint 1-day momentum (+0.024% over baseline) but reverses at 3 days and per-candle edge (+0.0155%) < 0.05% cost. Not tradable.",
+  "l": "The deployed momentum strategy already captures the 1-day momentum and exits before reversal. The funnel reaches for what's already there",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "MTF Alignment \u2192 Option Direction on NIFTY",
+  "c": "Complete strategies",
+  "w": "Month+week+day alignment on NIFTY, express via CE/PE",
+  "k": "10-year data reversed it. ALL-RED \u2192 +0.070%/EOD (oversold intraday bounce). The 2yr bear edge was a 2022-regime artifact. Another 2-year sample lie",
+  "l": "2-year samples killed here too. The 10-year data discipline caught the regime artifact",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Higher-TF Trend Gate",
+  "c": "Filters & gates",
+  "w": "Only trade when higher timeframe trends align",
+  "k": "Counter-trend filters mis-compose with momentum. Every variant hurt returns",
+  "l": "Momentum and trend-gating are philosophically opposed. Momentum enters at trend birth (when higher-TF hasn't confirmed). Gating it = killing it",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Month-Anchor Breakout",
+  "c": "Filters & gates",
+  "w": "Trade breakouts from monthly open",
+  "k": "No edge found",
+  "l": "Sometimes simple ideas just don't work",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Short-Extension",
+  "c": "Filters & gates",
+  "w": "Extend short side with additional filters",
+  "k": "No edge after costs",
+  "l": "Shorting in India has structural headwinds (STT, uptick rule, limited borrow)",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Meta-Labeling (ML)",
+  "c": "Filters & gates",
+  "w": "ML model to predict which signals to take",
+  "k": "No edge. 10yr data, proper walk-forward \u2014 ML added nothing",
+  "l": "In low-frequency strategies (~49 trades/yr), there's not enough data for ML to learn anything useful",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Yearly-Anchor-as-Filter",
+  "c": "Filters & gates",
+  "w": "Skip trades based on yearly open position",
+  "k": "Not a filter \u2014 had no predictive power",
+  "l": "Annual opens are descriptive, not predictive",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Version C 1m",
+  "c": "Filters & gates",
+  "w": "Alternative 1m strategy variant",
+  "k": "No edge (like all 1m strategies)",
+  "l": "1m in Indian equity = structurally unprofitable after costs",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Correlation Gate",
+  "c": "Filters & gates",
+  "w": "Skip signals when market-wide correlation spikes",
+  "k": "No edge. Correlation spikes don't predict direction",
+  "l": "Knowing WHEN is not knowing WHICH WAY",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Uncorrelated Diversifiers (Gold, Silver, FANG, Crypto)",
+  "c": "Filters & gates",
+  "w": "Add non-equity assets for diversification",
+  "k": "Modest +6% gain (parked). Crypto killed by Indian TDS (30% on profits). Other diversifiers showed small edges but require separate infrastructure",
+  "l": "Diversification is real but expensive to implement",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Profit Target 5% (the pullback engine)",
+  "c": "Additional gates",
+  "w": "Book profit at +5%",
+  "k": "Inert \u2014 rarely triggers at +5%",
+  "l": "Same momentum lesson \u2014 let winners run",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Regime Cooldown (48h after bear crossover)",
+  "c": "Additional gates",
+  "w": "Don't enter for 48h after EMA50/200 bear cross",
+  "k": "Valid \u2014 KEPT. It helps. One of the few filters that survived",
+  "l": "This one works because it respects regime, not counter-trend",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Distance-from-High",
+  "c": "Additional gates",
+  "w": "Block entry if within 1% of 60d high / 0.5% of 20d high",
+  "k": "Valid \u2014 KEPT. It's a trade-quality/turnover/cost filter, not a return predictor. Removing it FAILS at 3\u00d7 fees",
+  "l": "Some filters \"earn their place\" under costs even if they don't predict direction",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "V12 New Moon MACD Entry (the pullback engine)",
+  "c": "Additional gates",
+  "w": "See A2 above",
+  "k": "Neutral-to-negative. Rejected",
+  "l": "Already covered in A2",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Look-ahead Bias in DIVergence V2 (FIXED 22 July)",
+  "c": "Data & look-ahead",
+  "w": "Divergence state activated at pivot bar p2, but pivot needs p2+3 to be confirmed",
+  "k": "FIXED \u2014 pivot_right=3 shift applied everywhere",
+  "l": "Pivot-based detectors must compensate for confirmation delay. Always check if the signal was \"knowable at bar i\"",
+  "d": "Jun\u2013Jul 2026"
+ },
+ {
+  "n": "Divergence as EXIT (index engine)",
+  "c": "Filters & gates",
+  "w": "Exit longs on bearish divergence \u2014 the 'profit engine' claim.",
+  "k": "10-yr replay: div-exit made every window WORSE (60d: \u22125.25% vs \u22121.02% without; 2yr: +8.2 vs +15.4). Clipped winners within hours.",
+  "l": "A rule that looks like profit-taking can be systematic winner-clipping. Test exits in isolation.",
+  "d": "1 Aug 2026"
+ },
+ {
+  "n": "ADX / chop gates (index)",
+  "c": "Filters & gates",
+  "w": "Only trade when ADX says 'trending' \u2014 the classic chop filter.",
+  "k": "Apparent 60-day edge vanished after fixing a replay bug \u2014 the 'filter edge' was the bug's artifact. Corrected: plain cross beat every gated variant.",
+  "l": "Verify the harness before trusting what it says about filters.",
+  "d": "1 Aug 2026"
+ },
+ {
+  "n": "Plain slow-cross (index, both dirs)",
+  "c": "Complete strategies",
+  "w": "TradingView-standard MACD cross, bidirectional, no filters.",
+  "k": "Won recent windows (+2.95%/60d, +21%/2yr) but 10-yr said: avg +0.017%/trade, maxDD 27%, 2016 \u221213%, 2026 YTD \u22128.5%. Pre-registered gate: FAIL.",
+  "l": "A 2-year window can be two good years wearing a mask. Demand the full decade.",
+  "d": "1 Aug 2026"
+ },
+ {
+  "n": "W/L sizing as pure leverage (index)",
+  "c": "Complete strategies",
+  "w": "Scale position after consecutive losses (anti-martingale).",
+  "k": "Raised 10-yr total 5\u00d7 \u2014 but the three losing years stayed losing. Sizing amplifies edge; it cannot create one.",
+  "l": "Leverage is not alpha. It failed the same pre-registered year-rule.",
+  "d": "1 Aug 2026"
+ },
+ {
+  "n": "Loss-streak entry FILTER (index)",
+  "c": "Filters & gates",
+  "w": "Only take trades after 2+ consecutive shadow losses, flat size.",
+  "k": "Real as selection (skipped bucket is net-negative), best risk-adjusted \u2014 but negative in the years the base was strongest; failed the pre-registered year-rule.",
+  "l": "A real effect and a deployable strategy are different things.",
+  "d": "1 Aug 2026"
+ },
+ {
+  "n": "Cross-sectional MACD momentum (US, BRAIN)",
+  "c": "Complete strategies",
+  "w": "Our momentum family, tested on independent US data & infra.",
+  "k": "Train Sharpe 1.00 after iteration \u2014 sealed OOS test: \u22120.29. 2020-regime artifact. Not submitted.",
+  "l": "In-sample iteration converges on the regime, not the edge. Seal the test period first.",
+  "d": "29 Jul 2026"
+ },
+ {
+  "n": "PEAD via consensus surprise (US, BRAIN)",
+  "c": "Complete strategies",
+  "w": "Post-earnings drift from actual-vs-consensus EPS, 5 constructions.",
+  "k": "All ~0 on train (best 0.07); champion's sealed test: \u22120.74. The textbook anomaly didn't survive this construction.",
+  "l": "Documented anomalies decay. 'It's in the literature' is not evidence it's in the data.",
+  "d": "2 Aug 2026"
+ }
+]

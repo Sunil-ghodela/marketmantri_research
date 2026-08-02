@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Honest Quant Lab — we kill strategies for a living</title>
+<meta name="description" content="A public research log from India: 50+ hypotheses tested, 41 documented rejections, and one live paper experiment that reports its own scorecard weekly.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body><div class="wrap">
+<nav>
+  <div class="brand">the honest <span>quant lab</span></div>
+  <a href="index.html" class="on">Method</a>
+  <a href="graveyard.html">Graveyard</a>
+  <a href="experiment.html">Live experiment</a>
+  <a href="story-phantom-exit.html">Stories</a>
+  <a href="about.html">About</a>
+</nav>
+
+<h1>Everyone posts their Sharpe.<br><span class="dim">Here's our graveyard.</span></h1>
+<p class="lead">A public research log from an independent quant lab in India.
+We test trading hypotheses the way they should be tested — pre-registered rules,
+sealed out-of-sample looks, costs on every trade — and we publish the deaths,
+not just the survivors.</p>
+
+<div class="stats">
+  <div class="stat"><div class="n">50+</div><div class="l">hypotheses tested</div></div>
+  <div class="stat"><div class="n">41</div><div class="l">documented rejections</div></div>
+  <div class="stat"><div class="n">2</div><div class="l">live paper experiments</div></div>
+  <div class="stat"><div class="n">10yr</div><div class="l">minimum verification bar</div></div>
+</div>
+
+<h2>The pipeline every idea goes through</h2>
+<div class="pipeline">hypothesis
+   │
+   ▼
+pre-register the rules  ──►  git commit (timestamped, BEFORE any simulation)
+   │
+   ▼
+iterate on TRAIN data only          test period stays sealed in code
+   │
+   ▼
+declare champion  ──►  ONE sealed test look  ──►  verdict per the pre-written rule
+   │                                                    │
+   │ pass                                               │ fail
+   ▼                                                    ▼
+4-week PAPER gate (live, fees-net, audited)        graveyard  ✝  (logged, never tweaked)
+   │ pass
+   ▼
+only then: a real-money conversation</div>
+
+<h2>Four rules we don't break</h2>
+<ul class="rules">
+  <li><b>1. The verdict is written before the test.</b> Champion rules and pass/fail
+  thresholds are committed to git before a single simulation runs. No moving goalposts.</li>
+  <li><b>2. One sealed look.</b> The out-of-sample period is hidden by the tooling itself.
+  It gets opened once, for the declared champion. Fail → closed forever, no post-test tweaks.</li>
+  <li><b>3. Costs on every trade, every time.</b> A backtest without fees is fiction.
+  We learned this the hard way — a "Sharpe 2.31" strategy of ours turned out to be
+  net-negative in the current year once costs were counted. It's in the graveyard now.</li>
+  <li><b>4. Failures get published.</b> The rejection log is the moat. 41 documented
+  deaths protect the few things that survive.</li>
+</ul>
+
+<h2>Why believe any of this?</h2>
+<p>Because it's checkable. The research log — including the pre-registration commits,
+the rejection ledger and the harness code that reproduces our headline claims — is
+public on <a href="https://github.com/Sunil-ghodela" rel="noopener">GitHub</a>.
+The live experiment page updates weekly with the paper record <i>versus</i> what the
+backtest predicted — including the weeks where they disagree.</p>
+
+<blockquote>The most impressive thing about a strategy is not its returns.
+It's whether the research process was designed to challenge it.</blockquote>
+
+<div class="foot">Research log only — nothing here is investment advice, a signal
+service, or a solicitation. We don't manage money. · <a href="about.html">contact</a></div>
+</div></body></html>
