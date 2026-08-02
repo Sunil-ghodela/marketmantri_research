@@ -70,9 +70,13 @@ one copy-paste command, use **`docs/VERIFY.md`**.
 ## Research process
 
 - **50+ hypotheses** tested and written down: 18 catalogued in
-  `docs/RESEARCH_CATALOG.md`, **34 documented rejections** in
-  `docs/REJECTED_HYPOTHESES.md` — rejections are data too. Count them
-  yourself: `docs/VERIFY.md` has the commands.
+  `docs/RESEARCH_CATALOG.md`, **35 documented rejections** in
+  `site/graveyard.json` (rendered at `site/graveyard.html`) — rejections are
+  data too. Count them yourself: `docs/VERIFY.md` has the commands.
+  That file holds 39 entries; 4 are tagged as *not* rejections (two filters that
+  passed, one never tested, one defect we fixed) and are excluded from the 35
+  while staying published. `docs/REJECTED_HYPOTHESES.md` is the long-form prose
+  archive through 22 Jul 2026 (34 entries), kept for detail, not for the count.
 - Walk-forward / out-of-sample discipline via `optuna` splits; fee-aware
   net results; unit tests in `tests/`.
 - Research runs in an AI-agent-assisted workflow: agents draft code and

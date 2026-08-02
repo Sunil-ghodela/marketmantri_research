@@ -1,4 +1,12 @@
-# ❌ Rejected Hypotheses — Complete Graveyard (30+ Ideas)
+# ❌ Rejected Hypotheses — long-form archive (through 22 July 2026)
+
+> ⚠️ **This file is the prose archive, NOT the count.** It has 34 entries and
+> stops at 22 Jul 2026. The live ledger is **`site/graveyard.json`** (35
+> rejections + 4 tagged non-rejections), rendered at `site/graveyard.html` and
+> counted by `docs/VERIFY.md` C6. If the two disagree, the JSON wins. Keeping
+> two hand-maintained lists is exactly what caused the 41-vs-34 drift caught on
+> 2 Aug 2026 — this file is kept for the detail, and nothing quotes it as a
+> total.
 
 > **Date:** 22 July 2026  
 > **Purpose:** Every idea we tested and why it failed — the moat that protects the 3 that survived.

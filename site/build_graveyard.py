@@ -4,7 +4,18 @@ Chalao: python3 build_graveyard.py   (site/ folder me)"""
 import json
 import html as H
 
-data = json.load(open("graveyard.json"))
+ALL = json.load(open("graveyard.json"))
+
+# Only entries that were actually TESTED AND KILLED count as rejections. Two of
+# these filters were kept, one was never tested, one was a bug we fixed — they
+# stay on the page (they are part of the record) but they are NOT rejections and
+# must never inflate the headline number. Drift caught 2 Aug 2026.
+data = [d for d in ALL if d.get("s", "rejected") == "rejected"]
+other = [d for d in ALL if d.get("s", "rejected") != "rejected"]
+LABEL = {"kept": "kept — it survived the test",
+         "abandoned": "never tested — abandoned",
+         "fixed": "a defect we fixed, not a hypothesis"}
+
 cats = []
 for d in data:
     if d["c"] not in cats:
@@ -47,6 +58,24 @@ for c in order:
 chips = '<button class="on" data-f="All">All ({})</button>'.format(len(data)) + "".join(
     f'<button data-f="{H.escape(c)}">{H.escape(c)} ({counts[c]})</button>' for c in order)
 
+# ── the honest appendix: things on this page that are NOT rejections
+notrej = "".join(
+    f'<div class="g-entry">'
+    f'<div class="t"><span class="tomb">·</span>{H.escape(d["n"])} '
+    f'<em class="dim">— {H.escape(LABEL[d["s"]])}</em></div>'
+    f'<div class="w">{H.escape(d["w"])}</div>'
+    f'<div class="k"><b>Outcome</b>{H.escape(d["k"])}</div>'
+    f'<div class="l"><b>Lesson</b>{H.escape(d["l"])}</div></div>'
+    for d in other)
+notrej_block = (
+    f'<div class="cat-block"><div class="cat-head">'
+    f'<h2>Not rejections</h2><span class="cnt">{len(other)} entries</span></div>'
+    f'<p class="lead">These were logged alongside the graveyard but they are not '
+    f'rejections, so they are excluded from the {len(data)} above: two filters that '
+    f'passed and are still in the strategy, one idea never tested, and one defect we '
+    f'found and fixed. Keeping them visible is the point — the count stays honest '
+    f'only if the exclusions are published too.</p>{notrej}</div>')
+
 page = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,6 +108,8 @@ Deployed parameters are redacted; everything else is as it happened.</p>
 
 {"".join(blocks)}
 
+{notrej_block}
+
 <div class="foot">Research log only — not investment advice. ·
 <a href="index.html">method</a> · <a href="experiment.html">live experiment</a></div>
 </div>
@@ -94,4 +125,4 @@ document.getElementById('filters').addEventListener('click',e=>{{
 </script>
 </body></html>"""
 open("graveyard.html", "w").write(page)
-print(f"graveyard.html: {len(data)} entries, {len(order)} categories, chart included")
+print(f"graveyard.html: {len(data)} rejections + {len(other)} non-rejections, {len(order)} categories")

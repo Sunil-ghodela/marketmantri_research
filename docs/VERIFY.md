@@ -63,15 +63,37 @@ python3 -c "import json;v=json.load(open('v12_comparison_results.json'))['V12_OF
 ```
 Expected: `1.87 2.18` (fee drag 0.31 is in the same object).
 
-## C6 — hypothesis volume: 18 catalogued + 34 documented rejections = 52 entries
+## C6 — hypothesis volume: 18 catalogued + 35 documented rejections = 53 entries
 
 ```bash
 grep -cE "^### " docs/RESEARCH_CATALOG.md
-grep -cE "^### " docs/REJECTED_HYPOTHESES.md
+python3 -c "import json;d=json.load(open('site/graveyard.json'));print(sum(1 for x in d if x.get('s','rejected')=='rejected'), len(d))"
 ```
-Expected: `18` and `34`. **We quote "50+ hypotheses"** — 52 is the
+Expected: `18`, then `35 39`. **We quote "50+ hypotheses"** — 53 is the
 conservatively countable floor in this snapshot; probe scripts in the private
 repo push the informal total higher, but we only claim what you can count here.
+
+**Which file is the count?** `site/graveyard.json` — it is the live ledger and
+the one the public graveyard page renders, so the number on the site and the
+number you can count here are the same object. `docs/REJECTED_HYPOTHESES.md` is
+the long-form prose archive and stops at 22 Jul 2026 (34 entries); it is kept
+for the detail, not for the count. If the two ever disagree, the JSON wins.
+
+**Why 35 rejections but 39 entries?** Four entries on that page are *not*
+rejections and are excluded from the headline number — they carry
+`"s"` = `kept` / `abandoned` / `fixed` and render in a separate "Not rejections"
+block: two filters that **passed** and are still in the strategy (Regime
+Cooldown, Distance-from-High), one idea that was **never tested** (V13 1H MACD
+filter), and one **defect we fixed** (the DIV-V2 look-ahead), which is a bug
+report, not a hypothesis. They stay published — a count is only honest if its
+exclusions are visible too.
+
+*Drift caught 2 Aug 2026, before the first public post:* the site said **41**,
+this file said **34**, and the BRAIN log was counting a third way — three
+hand-maintained numbers for one quantity. Two entries were also duplicated
+("Profit Target 5%", "V12 New Moon"), and the five above were never rejections
+at all. Corrected to **35**, with the count now derived from a single file by
+the command above. The claim that shrank is the claim we can defend.
 
 ## C7 — unit tests exist for the live-engine logic
 

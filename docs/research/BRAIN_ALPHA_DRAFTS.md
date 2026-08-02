@@ -149,7 +149,8 @@ Per the pre-registered rule: not submitted, no post-test tweaking, closed.
 2. The divergence proxy (`ts_corr(close, hist, 20)`) consistently improved the in-sample
    base across variants (+Sharpe, −turnover, +margin, rescued 2019) — the *modifier* keeps
    its in-sample support even though the *base* died OOS.
-3. The whole alpha family is a 2020-vol-regime artifact — 35th documented rejection,
+3. The whole alpha family is a 2020-vol-regime artifact — logged in the graveyard
+   ledger (`site/graveyard.json`, count via `docs/VERIFY.md` C6),
    this time on data we never touched, with the test period sealed until one look.
 
 Next session (fresh hypothesis, not a tweak): different data set (the "Single Data Set
@@ -247,7 +248,7 @@ train Sharpe ≥ 1.0 prefer. Sims ke baad champion yahin declare hoga, TABHI tes
 AND sign train se match → zinda (submission-checks tak jayega). Warna → REJECTED,
 log, band — koi post-test tweak nahi, kabhi nahi.
 
-### 2 Aug — Session 2 results & verdict: PEAD REJECTED (36th documented rejection)
+### 2 Aug — Session 2 results & verdict: PEAD REJECTED (logged in the graveyard ledger)
 
 Train (sab, USA/TOP3000/D1/subind/decay4, test sealed):
 | sim | idea | sharpe | fitness | turnover |
