@@ -246,3 +246,31 @@ train Sharpe ≥ 1.0 prefer. Sims ke baad champion yahin declare hoga, TABHI tes
 **Verdict rule (abhi likha, test-look se pehle):** champion ka TEST Sharpe ≥ 0.5
 AND sign train se match → zinda (submission-checks tak jayega). Warna → REJECTED,
 log, band — koi post-test tweak nahi, kabhi nahi.
+
+### 2 Aug — Session 2 results & verdict: PEAD REJECTED (36th documented rejection)
+
+Train (sab, USA/TOP3000/D1/subind/decay4, test sealed):
+| sim | idea | sharpe | fitness | turnover |
+|---|---|---|---|---|
+| S1 | base rank((actual−est)/close) | 0.01 | 0.00 | 3.6% |
+| S2 | + 60d event-window | −0.19 | −0.06 | 5.8% |
+| S3 | SUE (stddev-scaled) | −0.04 | −0.00 | 5.7% |
+| S4 | freshness-fade | −0.51 | −0.26 | 9.2% |
+| S5 | timing-fix (est ts_delay 63) | 0.07 | 0.01 | 3.7% |
+
+**Champion (pre-registered rule: best train fitness): S5 (id zqNvOJ5G).**
+**Sealed test-look (ONE, ritual poora): TEST Sharpe −0.74, fitness −0.44.**
+**Verdict (pre-registered: TEST ≥ 0.5 + sign-match chahiye tha): REJECTED. Band.**
+Koi post-test tweak nahi hua; sim-cap 7 me 5 use hue (2 reserve bache, kharch nahi kiye).
+
+**Kya seekha (log, bahana nahi):**
+1. Naive consensus-surprise PEAD is platform/universe pe kahin nahi dikhta — na raw,
+   na windowed, na SUE, na freshness, na timing-fix. Sab ~0 ya negative.
+2. Literature bhi kehta hai PEAD post-2010 large/mid-caps me heavily arbitraged hai;
+   TOP3000 + delay-1 + subind-neutral shayad use poora kha jaata hai. Chhota
+   universe / event-day data / different surprise def kisi AUR din ki alag
+   hypothesis hai — is session ki tweak nahi.
+3. Process note: session poori API se chali (login owner ke haath, cookie-only),
+   pre-registration sims se pehle commit hui (5d7c12c) — discipline ab automated hai.
+
+**Queue agla (kisi aur din, one-per-day):** #2 OBV/volume-flow.
